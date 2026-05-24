@@ -8,6 +8,7 @@ const app = express();
 const port = process.env.PORT || 3000;
 const razorpayKeyId = process.env.RAZORPAY_KEY_ID;
 const razorpayKeySecret = process.env.RAZORPAY_KEY_SECRET;
+const isRazorpayTestMode = razorpayKeyId?.startsWith('rzp_test_') || false;
 const resendApiKey = process.env.RESEND_API_KEY;
 const resendFrom = process.env.RESEND_FROM;
 const bookingNotifyTo = process.env.BOOKING_NOTIFY_TO;
@@ -87,7 +88,11 @@ async function notifyBooking(booking) {
 }
 
 app.get('/api/config', (_req, res) => {
-  res.json({ razorpayKeyId });
+  res.json({
+    razorpayKeyId,
+    paymentMode: isRazorpayTestMode ? 'test' : 'live',
+    isRazorpayConfigured: Boolean(razorpay)
+  });
 });
 
 app.post('/api/create-ppf-order', async (req, res) => {

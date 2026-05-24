@@ -82,7 +82,8 @@ const bookingSubmit = document.querySelector('.booking-submit');
 const ppfPaymentButton = document.getElementById('ppfPaymentButton');
 const paymentStatus = document.getElementById('paymentStatus');
 const ppfPrepaidAmount = 10000;
-let razorpayKeyId = '';
+const fallbackRazorpayKeyId = 'rzp_test_StEJ6PIxJvAarJ';
+let razorpayKeyId = fallbackRazorpayKeyId;
 
 function formatPrice(price) {
   if (typeof price === 'number') {
@@ -179,11 +180,13 @@ function updatePrice() {
 async function loadPaymentConfig() {
   try {
     const response = await fetch('/api/config');
-    if (!response.ok) return;
+    if (!response.ok) {
+      return;
+    }
     const config = await response.json();
-    razorpayKeyId = config.razorpayKeyId || '';
+    razorpayKeyId = config.razorpayKeyId || fallbackRazorpayKeyId;
   } catch {
-    razorpayKeyId = '';
+    razorpayKeyId = fallbackRazorpayKeyId;
   }
 }
 
@@ -203,7 +206,7 @@ async function startPpfPayment() {
   }
 
   if (!razorpayKeyId) {
-    paymentStatus.textContent = 'Payment gateway is not configured yet.';
+    paymentStatus.textContent = 'Payment gateway public key is not configured yet.';
     return;
   }
 

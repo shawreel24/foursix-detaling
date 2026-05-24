@@ -19,13 +19,15 @@ copy .env.example .env
 Fill in:
 
 ```bash
-RAZORPAY_KEY_ID=your_razorpay_key_id
+RAZORPAY_KEY_ID=your_razorpay_test_key_id
 RAZORPAY_KEY_SECRET=your_razorpay_key_secret
 RESEND_API_KEY=your_resend_api_key
 RESEND_FROM=FourSix Detailing <your_verified_sender@yourdomain.com>
 BOOKING_NOTIFY_TO=booking_receiver@example.com
 PORT=3000
 ```
+
+For testing, use Razorpay keys that start with `rzp_test_`. Do not put `RAZORPAY_KEY_SECRET` in browser JavaScript or commit it to GitHub.
 
 Do not commit `.env`.
 
