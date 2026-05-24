@@ -82,8 +82,7 @@ const bookingSubmit = document.querySelector('.booking-submit');
 const ppfPaymentButton = document.getElementById('ppfPaymentButton');
 const paymentStatus = document.getElementById('paymentStatus');
 const ppfPrepaidAmount = 10000;
-const fallbackRazorpayKeyId = 'rzp_test_StEJ6PIxJvAarJ';
-let razorpayKeyId = fallbackRazorpayKeyId;
+let razorpayKeyId = '';
 
 function formatPrice(price) {
   if (typeof price === 'number') {
@@ -183,11 +182,21 @@ async function loadPaymentConfig() {
     if (!response.ok) {
       return;
     }
-    const config = await response.json();
-    razorpayKeyId = config.razorpayKeyId || fallbackRazorpayKeyId;
+    const config = await parseJsonResponse(response, 'Payment server is not returning valid configuration.');
+    razorpayKeyId = config.razorpayKeyId || '';
   } catch {
-    razorpayKeyId = fallbackRazorpayKeyId;
+    razorpayKeyId = '';
   }
+}
+
+async function parseJsonResponse(response, fallbackMessage) {
+  const contentType = response.headers.get('content-type') || '';
+
+  if (!contentType.includes('application/json')) {
+    throw new Error(fallbackMessage);
+  }
+
+  return response.json();
 }
 
 async function startPpfPayment() {
@@ -206,7 +215,7 @@ async function startPpfPayment() {
   }
 
   if (!razorpayKeyId) {
-    paymentStatus.textContent = 'Payment gateway public key is not configured yet.';
+    paymentStatus.textContent = 'Payment server is not configured yet. Open this page from the Node server on localhost:3000.';
     return;
   }
 
@@ -220,7 +229,10 @@ async function startPpfPayment() {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ booking })
     });
-    const order = await orderResponse.json();
+    const order = await parseJsonResponse(
+      orderResponse,
+      'Payment server is not available. Open this page from the Node server on localhost:3000.'
+    );
 
     if (!orderResponse.ok) {
       throw new Error(order.error || 'Could not create payment order.');
@@ -288,7 +300,10 @@ async function startPpfPayment() {
             ...response
           })
         });
-        const result = await verifyResponse.json();
+        const result = await parseJsonResponse(
+          verifyResponse,
+          'Payment verification server is not available. Open this page from the Node server on localhost:3000.'
+        );
 
         if (!verifyResponse.ok) {
           throw new Error(result.error || 'Payment verification failed.');
