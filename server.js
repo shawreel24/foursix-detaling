@@ -12,6 +12,10 @@ const isRazorpayTestMode = razorpayKeyId?.startsWith('rzp_test_') || false;
 const resendApiKey = process.env.RESEND_API_KEY;
 const resendFrom = process.env.RESEND_FROM;
 const bookingNotifyTo = process.env.BOOKING_NOTIFY_TO;
+const allowedOrigins = (process.env.ALLOWED_ORIGINS || '')
+  .split(',')
+  .map((origin) => origin.trim())
+  .filter(Boolean);
 
 if (!razorpayKeyId || !razorpayKeySecret) {
   console.warn('Razorpay credentials are missing. Set RAZORPAY_KEY_ID and RAZORPAY_KEY_SECRET.');
@@ -22,6 +26,22 @@ const razorpay = razorpayKeyId && razorpayKeySecret
   : null;
 const resend = resendApiKey ? new Resend(resendApiKey) : null;
 const paidBookings = new Map();
+
+app.use((req, res, next) => {
+  const origin = req.get('origin');
+  if (origin && allowedOrigins.includes(origin)) {
+    res.setHeader('Access-Control-Allow-Origin', origin);
+    res.setHeader('Vary', 'Origin');
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+    res.setHeader('Access-Control-Allow-Methods', 'GET,POST,OPTIONS');
+  }
+
+  if (req.method === 'OPTIONS') {
+    return res.sendStatus(204);
+  }
+
+  return next();
+});
 
 app.use(express.json());
 app.use(express.static('.'));

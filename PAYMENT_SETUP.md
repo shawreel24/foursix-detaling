@@ -24,6 +24,7 @@ RAZORPAY_KEY_SECRET=your_razorpay_key_secret
 RESEND_API_KEY=your_resend_api_key
 RESEND_FROM=FourSix Detailing <your_verified_sender@yourdomain.com>
 BOOKING_NOTIFY_TO=booking_receiver@example.com
+ALLOWED_ORIGINS=https://shawreel24.github.io
 PORT=3000
 ```
 
@@ -42,6 +43,27 @@ Open:
 ```text
 http://localhost:3000/booking.html?service=paintProtectionFilm
 ```
+
+## GitHub Pages
+
+GitHub Pages cannot run `server.js`, but it can call a deployed Node backend.
+
+1. Deploy this project to a Node host such as Render, Railway, or Vercel.
+2. Add the `.env` values to that host, including:
+
+```bash
+ALLOWED_ORIGINS=https://shawreel24.github.io
+```
+
+3. In `assets/js/site-config.js`, set `apiBaseUrl` to the deployed backend URL:
+
+```js
+window.FOURSIX_CONFIG = {
+  apiBaseUrl: 'https://your-backend.example.com'
+};
+```
+
+Keep `apiBaseUrl` blank for local testing on `http://localhost:3000`.
 
 ## Current Flow
 

@@ -4,6 +4,11 @@ const sendButton = document.getElementById('sendBookingRequestButton');
 const whatsappNumber = '919506745852';
 let booking = null;
 
+function getApiUrl(path) {
+  const baseUrl = window.FOURSIX_CONFIG?.apiBaseUrl?.replace(/\/$/, '') || '';
+  return `${baseUrl}${path}`;
+}
+
 function getBookingId() {
   return new URLSearchParams(window.location.search).get('bookingId');
 }
@@ -64,7 +69,7 @@ async function loadBooking() {
   }
 
   try {
-    const response = await fetch(`/api/bookings/${encodeURIComponent(bookingId)}`);
+    const response = await fetch(getApiUrl(`/api/bookings/${encodeURIComponent(bookingId)}`));
     const result = await response.json();
 
     if (!response.ok) {

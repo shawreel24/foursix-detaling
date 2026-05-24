@@ -84,6 +84,11 @@ const paymentStatus = document.getElementById('paymentStatus');
 const ppfPrepaidAmount = 10000;
 let razorpayKeyId = '';
 
+function getApiUrl(path) {
+  const baseUrl = window.FOURSIX_CONFIG?.apiBaseUrl?.replace(/\/$/, '') || '';
+  return `${baseUrl}${path}`;
+}
+
 function formatPrice(price) {
   if (typeof price === 'number') {
     return `Rs. ${price.toLocaleString('en-IN')}`;
@@ -178,7 +183,7 @@ function updatePrice() {
 
 async function loadPaymentConfig() {
   try {
-    const response = await fetch('/api/config');
+    const response = await fetch(getApiUrl('/api/config'));
     if (!response.ok) {
       return;
     }
@@ -224,7 +229,7 @@ async function startPpfPayment() {
 
   try {
     const booking = createBookingPayload();
-    const orderResponse = await fetch('/api/create-ppf-order', {
+    const orderResponse = await fetch(getApiUrl('/api/create-ppf-order'), {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ booking })
@@ -291,7 +296,7 @@ async function startPpfPayment() {
       handler: async (response) => {
         paymentStatus.textContent = 'Verifying payment and creating booking request...';
 
-        const verifyResponse = await fetch('/api/verify-ppf-payment', {
+        const verifyResponse = await fetch(getApiUrl('/api/verify-ppf-payment'), {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
