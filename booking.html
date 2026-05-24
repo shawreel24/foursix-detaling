@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Book a Service | FOURSIX DETAILING</title>
+<meta name="description" content="Book FourSix Detailing services with clear package and vehicle-size pricing.">
+<link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body class="booking-page">
+<nav class="nav" id="navbar">
+  <a href="index.html#home" class="logo">
+    <img src="assets/logo/Foursix dns.png" alt="Foursix Detailing logo">
+    <span class="logo-text">FOUR<span>SIX</span> <span>DETAILING</span></span>
+  </a>
+  <div class="nav-links">
+    <a href="index.html#about">Studio</a>
+    <a href="index.html#services">Services</a>
+    <a href="index.html#offer">Offer</a>
+    <a href="index.html#work">Work</a>
+    <a href="index.html#contact">Contact</a>
+  </div>
+  <a href="index.html#services" class="btn btn-primary" style="padding: 0.75rem 1.5rem; font-size: 0.8rem;"><span>Services</span></a>
+</nav>
+
+<main>
+  <section class="booking-hero">
+    <div class="booking-hero-copy reveal">
+      <p class="service-kicker">Service Booking</p>
+      <h1 class="booking-title">Choose your service and see the price.</h1>
+      <p class="booking-intro">Select a service, package, and vehicle type. The price updates instantly from the FourSix Detailing price list.</p>
+    </div>
+  </section>
+
+  <section class="section booking-section">
+    <div class="container booking-grid">
+      <form class="booking-panel reveal" id="bookingForm">
+        <div class="booking-field">
+          <label for="customerName">Name</label>
+          <input id="customerName" type="text" placeholder="Your name">
+        </div>
+
+        <div class="booking-field">
+          <label for="customerPhone">Phone</label>
+          <input id="customerPhone" type="tel" placeholder="Your phone number">
+        </div>
+
+        <div class="booking-field">
+          <label for="serviceSelect">Service</label>
+          <select id="serviceSelect"></select>
+        </div>
+
+        <div class="booking-field">
+          <label for="packageSelect">Package</label>
+          <select id="packageSelect"></select>
+        </div>
+
+        <div class="booking-field">
+          <label for="vehicleSelect">Vehicle Type</label>
+          <select id="vehicleSelect">
+            <option value="small">Small Car</option>
+            <option value="sedan">Sedan</option>
+            <option value="suv">SUV</option>
+          </select>
+        </div>
+
+        <div class="booking-field">
+          <label for="bookingNotes">Notes</label>
+          <textarea id="bookingNotes" placeholder="Vehicle model, preferred date, or any request"></textarea>
+        </div>
+
+        <button type="submit" class="btn btn-primary booking-submit"><span>Send Booking Request</span></button>
+      </form>
+
+      <aside class="price-panel reveal d1" aria-live="polite">
+        <p class="price-label">Estimated Price</p>
+        <div class="price-value" id="priceValue">Rs. 0</div>
+        <p class="price-detail" id="priceDetail">Select a service to view pricing.</p>
+        <p class="discount-note">Discount may vary depending upon the desired services.</p>
+        <div class="price-breakdown">
+          <div><span>Service</span><strong id="summaryService">-</strong></div>
+          <div><span>Package</span><strong id="summaryPackage">-</strong></div>
+          <div><span>Vehicle</span><strong id="summaryVehicle">-</strong></div>
+        </div>
+
+        <div class="payment-structure" id="paymentStructure">
+          <p class="payment-title">Payment Structure</p>
+          <div class="payment-row">
+            <span>Prepaid to confirm booking</span>
+            <strong id="prepaidAmount">-</strong>
+          </div>
+          <div class="payment-row">
+            <span>Balance after work</span>
+            <strong id="balanceAmount">-</strong>
+          </div>
+          <div class="payment-gateway-box">
+            <p>Payment Gateway Structure</p>
+            <span class="payment-note">Booking request will be sent after the prepaid payment is completed.</span>
+            <div class="payment-methods">
+              <button type="button" disabled>UPI</button>
+              <button type="button" disabled>Card</button>
+              <button type="button" disabled>Net Banking</button>
+            </div>
+            <button type="button" class="btn payment-continue" disabled><span>Continue to Payment</span></button>
+          </div>
+        </div>
+      </aside>
+    </div>
+  </section>
+</main>
+
+<script src="assets/js/main.js"></script>
+<script src="assets/js/booking.js"></script>
+</body>
+</html>
