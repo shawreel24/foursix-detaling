@@ -79,7 +79,10 @@ const paymentStructure = document.getElementById('paymentStructure');
 const prepaidAmount = document.getElementById('prepaidAmount');
 const balanceAmount = document.getElementById('balanceAmount');
 const bookingSubmit = document.querySelector('.booking-submit');
+const ppfPaymentButton = document.getElementById('ppfPaymentButton');
+const paymentStatus = document.getElementById('paymentStatus');
 const ppfPrepaidAmount = 10000;
+let razorpayKeyId = '';
 
 function formatPrice(price) {
   if (typeof price === 'number') {
@@ -103,6 +106,31 @@ function getSelection() {
   const price = selectedPackage.prices[vehicle];
 
   return { service, selectedPackage, vehicle, price };
+}
+
+function getCustomerDetails() {
+  return {
+    name: document.getElementById('customerName').value.trim() || 'Not provided',
+    phone: document.getElementById('customerPhone').value.trim() || 'Not provided'
+  };
+}
+
+function createBookingPayload(extra = {}) {
+  const { service, selectedPackage, vehicle, price } = getSelection();
+  const balance = typeof price === 'number' ? Math.max(price - ppfPrepaidAmount, 0) : 'Custom quote';
+
+  return {
+    serviceKey: serviceSelect.value,
+    service: service.label,
+    package: selectedPackage.label,
+    vehicle: vehicleLabels[vehicle],
+    totalPrice: formatPrice(price),
+    prepaidAmount: formatPrice(ppfPrepaidAmount),
+    balanceAmount: formatPrice(balance),
+    customer: getCustomerDetails(),
+    notes: document.getElementById('bookingNotes').value.trim() || 'None',
+    ...extra
+  };
 }
 
 function populateServices() {
@@ -136,12 +164,148 @@ function updatePrice() {
 
   paymentStructure.classList.toggle('is-active', isPpf);
   bookingSubmit.classList.toggle('is-hidden', isPpf);
+  paymentStatus.textContent = '';
   if (isPpf) {
     prepaidAmount.textContent = formatPrice(ppfPrepaidAmount);
     balanceAmount.textContent = formatPrice(Math.max(price - ppfPrepaidAmount, 0));
+    ppfPaymentButton.disabled = false;
   } else {
     prepaidAmount.textContent = '-';
     balanceAmount.textContent = '-';
+    ppfPaymentButton.disabled = true;
+  }
+}
+
+async function loadPaymentConfig() {
+  try {
+    const response = await fetch('/api/config');
+    if (!response.ok) return;
+    const config = await response.json();
+    razorpayKeyId = config.razorpayKeyId || '';
+  } catch {
+    razorpayKeyId = '';
+  }
+}
+
+async function startPpfPayment() {
+  const { price } = getSelection();
+  if (serviceSelect.value !== 'paintProtectionFilm' || typeof price !== 'number') {
+    return;
+  }
+
+  if (!window.Razorpay) {
+    paymentStatus.textContent = 'Payment gateway script could not load. Please try again.';
+    return;
+  }
+
+  if (!razorpayKeyId) {
+    await loadPaymentConfig();
+  }
+
+  if (!razorpayKeyId) {
+    paymentStatus.textContent = 'Payment gateway is not configured yet.';
+    return;
+  }
+
+  ppfPaymentButton.disabled = true;
+  paymentStatus.textContent = 'Creating secure payment...';
+
+  try {
+    const booking = createBookingPayload();
+    const orderResponse = await fetch('/api/create-ppf-order', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ booking })
+    });
+    const order = await orderResponse.json();
+
+    if (!orderResponse.ok) {
+      throw new Error(order.error || 'Could not create payment order.');
+    }
+
+    const checkout = new Razorpay({
+      key: razorpayKeyId,
+      amount: order.amount * 100,
+      currency: order.currency,
+      name: 'FourSix Detailing',
+      description: `PPF prepaid booking ${order.bookingId}`,
+      order_id: order.orderId,
+      method: {
+        upi: true,
+        card: true,
+        netbanking: true,
+        wallet: true,
+        emi: false,
+        cardless_emi: false,
+        paylater: false
+      },
+      config: {
+        display: {
+          blocks: {
+            paymentOptions: {
+              name: 'Payment Options',
+              instruments: [
+                { method: 'upi' },
+                { method: 'card' },
+                { method: 'wallet' },
+                { method: 'netbanking' }
+              ]
+            }
+          },
+          hide: [
+            { method: 'emi' },
+            { method: 'cardless_emi' },
+            { method: 'paylater' }
+          ],
+          sequence: ['block.paymentOptions'],
+          preferences: {
+            show_default_blocks: false
+          }
+        }
+      },
+      prefill: {
+        name: booking.customer.name === 'Not provided' ? '' : booking.customer.name,
+        contact: booking.customer.phone === 'Not provided' ? '' : booking.customer.phone
+      },
+      notes: {
+        bookingId: order.bookingId,
+        service: booking.service,
+        package: booking.package,
+        vehicle: booking.vehicle
+      },
+      handler: async (response) => {
+        paymentStatus.textContent = 'Verifying payment and creating booking request...';
+
+        const verifyResponse = await fetch('/api/verify-ppf-payment', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            booking: createBookingPayload({ bookingId: order.bookingId }),
+            bookingId: order.bookingId,
+            ...response
+          })
+        });
+        const result = await verifyResponse.json();
+
+        if (!verifyResponse.ok) {
+          throw new Error(result.error || 'Payment verification failed.');
+        }
+
+        paymentStatus.textContent = `Payment complete. Booking ID: ${result.bookingId}`;
+        window.location.href = `booking-request.html?bookingId=${encodeURIComponent(result.bookingId)}`;
+      },
+      modal: {
+        ondismiss: () => {
+          paymentStatus.textContent = 'Payment was not completed.';
+          ppfPaymentButton.disabled = false;
+        }
+      }
+    });
+
+    checkout.open();
+  } catch (error) {
+    paymentStatus.textContent = error.message || 'Payment could not be started.';
+    ppfPaymentButton.disabled = false;
   }
 }
 
@@ -149,8 +313,7 @@ function sendBookingRequest(event) {
   event.preventDefault();
 
   const { service, selectedPackage, vehicle, price } = getSelection();
-  const name = document.getElementById('customerName').value.trim() || 'Not provided';
-  const phone = document.getElementById('customerPhone').value.trim() || 'Not provided';
+  const customer = getCustomerDetails();
   const notes = document.getElementById('bookingNotes').value.trim() || 'None';
   const isPpf = serviceSelect.value === 'paintProtectionFilm' && typeof price === 'number';
   if (isPpf) {
@@ -164,8 +327,8 @@ function sendBookingRequest(event) {
     : [];
   const message = [
     'Hello FourSix Detailing, I want to book a service.',
-    `Name: ${name}`,
-    `Phone: ${phone}`,
+    `Name: ${customer.name}`,
+    `Phone: ${customer.phone}`,
     `Service: ${service.label}`,
     `Package: ${selectedPackage.label}`,
     `Vehicle Type: ${vehicleLabels[vehicle]}`,
@@ -179,6 +342,7 @@ function sendBookingRequest(event) {
 
 populateServices();
 populatePackages();
+loadPaymentConfig();
 updatePrice();
 
 serviceSelect.addEventListener('change', () => {
@@ -189,3 +353,4 @@ serviceSelect.addEventListener('change', () => {
 packageSelect.addEventListener('change', updatePrice);
 vehicleSelect.addEventListener('change', updatePrice);
 bookingForm.addEventListener('submit', sendBookingRequest);
+ppfPaymentButton.addEventListener('click', startPpfPayment);

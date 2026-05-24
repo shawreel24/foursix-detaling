@@ -94,14 +94,10 @@
             <strong id="balanceAmount">-</strong>
           </div>
           <div class="payment-gateway-box">
-            <p>Payment Gateway Structure</p>
+            <p>Payment Gateway</p>
             <span class="payment-note">Booking request will be sent after the prepaid payment is completed.</span>
-            <div class="payment-methods">
-              <button type="button" disabled>UPI</button>
-              <button type="button" disabled>Card</button>
-              <button type="button" disabled>Net Banking</button>
-            </div>
-            <button type="button" class="btn payment-continue" disabled><span>Continue to Payment</span></button>
+            <button type="button" class="btn payment-continue" id="ppfPaymentButton"><span>Pay Prepaid Amount</span></button>
+            <p class="payment-status" id="paymentStatus"></p>
           </div>
         </div>
       </aside>
@@ -110,6 +106,7 @@
 </main>
 
 <script src="assets/js/main.js"></script>
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 <script src="assets/js/booking.js"></script>
 </body>
 </html>

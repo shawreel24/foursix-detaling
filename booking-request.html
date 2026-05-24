@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Send Booking Request | FOURSIX DETAILING</title>
+<meta name="description" content="Send your paid FourSix Detailing booking details to WhatsApp.">
+<link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body class="booking-page">
+<nav class="nav" id="navbar">
+  <a href="index.html#home" class="logo">
+    <img src="assets/logo/Foursix dns.png" alt="Foursix Detailing logo">
+    <span class="logo-text">FOUR<span>SIX</span> <span>DETAILING</span></span>
+  </a>
+  <div class="nav-links">
+    <a href="index.html#about">Studio</a>
+    <a href="index.html#services">Services</a>
+    <a href="index.html#offer">Offer</a>
+    <a href="index.html#work">Work</a>
+    <a href="index.html#contact">Contact</a>
+  </div>
+  <a href="booking.html?service=paintProtectionFilm" class="btn btn-primary" style="padding: 0.75rem 1.5rem; font-size: 0.8rem;"><span>Booking</span></a>
+</nav>
+
+<main>
+  <section class="booking-hero booking-request-hero">
+    <div class="booking-hero-copy reveal">
+      <p class="service-kicker">Payment Complete</p>
+      <h1 class="booking-title">Send your booking request.</h1>
+      <p class="booking-intro">Your paid booking details are ready. Send them to FourSix Detailing on WhatsApp to confirm the request.</p>
+    </div>
+  </section>
+
+  <section class="section booking-section">
+    <div class="container booking-request-panel reveal">
+      <p class="payment-status" id="bookingRequestStatus">Loading booking details...</p>
+      <div class="booking-request-summary" id="bookingRequestSummary" hidden></div>
+      <button type="button" class="btn btn-primary booking-request-button" id="sendBookingRequestButton" hidden>
+        <span>Send Booking Request</span>
+      </button>
+    </div>
+  </section>
+</main>
+
+<script src="assets/js/main.js"></script>
+<script src="assets/js/booking-request.js"></script>
+</body>
+</html>

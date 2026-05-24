@@ -749,7 +749,7 @@ ul { list-style: none; }
 
 .payment-methods {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: 1fr;
   gap: 0.5rem;
   margin-bottom: 1rem;
 }
@@ -766,8 +766,57 @@ ul { list-style: none; }
 
 .payment-continue {
   width: 100%;
+}
+
+.payment-continue:disabled {
   opacity: 0.55;
   cursor: not-allowed;
+}
+
+.payment-status {
+  margin-top: 1rem;
+  color: var(--text-muted);
+  font-size: 0.95rem;
+}
+
+.booking-request-hero {
+  min-height: 48vh;
+}
+
+.booking-request-panel {
+  max-width: 860px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  padding: clamp(1.25rem, 3vw, 3rem);
+}
+
+.booking-request-summary {
+  display: grid;
+  gap: 1px;
+  margin-top: 1.5rem;
+  background: var(--border);
+}
+
+.booking-request-summary div {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  background: var(--surface);
+  padding: 1rem 0;
+}
+
+.booking-request-summary span {
+  color: var(--text-muted);
+}
+
+.booking-request-summary strong {
+  text-align: right;
+  font-weight: 500;
+}
+
+.booking-request-button {
+  width: 100%;
+  margin-top: 1.5rem;
 }
 
 /* OFFER */
