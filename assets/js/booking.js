@@ -86,7 +86,23 @@ let razorpayKeyId = '';
 
 function getApiUrl(path) {
   const baseUrl = window.FOURSIX_CONFIG?.apiBaseUrl?.replace(/\/$/, '') || '';
+  // Map Express-style paths to Supabase Edge Function names when using cloud backend
+  if (baseUrl.includes('supabase.co')) {
+    const edgeFunctionMap = {
+      '/api/config': '/foursix-config',
+      '/api/create-ppf-order': '/foursix-create-order',
+      '/api/verify-ppf-payment': '/foursix-verify-payment',
+    };
+    const edgePath = edgeFunctionMap[path];
+    if (edgePath) return `${baseUrl}${edgePath}`;
+  }
   return `${baseUrl}${path}`;
+}
+
+// Returns Authorization header for Supabase Edge Function calls.
+// No longer needed since functions use --no-verify-jwt, but kept as a no-op for safety.
+function getAuthHeaders() {
+  return {};
 }
 
 function formatPrice(price) {
@@ -183,7 +199,9 @@ function updatePrice() {
 
 async function loadPaymentConfig() {
   try {
-    const response = await fetch(getApiUrl('/api/config'));
+    const response = await fetch(getApiUrl('/api/config'), {
+      headers: getAuthHeaders(),
+    });
     if (!response.ok) {
       return;
     }
@@ -220,7 +238,7 @@ async function startPpfPayment() {
   }
 
   if (!razorpayKeyId) {
-    paymentStatus.textContent = 'Payment server is not configured yet. Open this page from the Node server on localhost:3000.';
+    paymentStatus.textContent = 'Payment is not configured yet. Please contact FourSix Detailing.';
     return;
   }
 
@@ -231,12 +249,12 @@ async function startPpfPayment() {
     const booking = createBookingPayload();
     const orderResponse = await fetch(getApiUrl('/api/create-ppf-order'), {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json', ...getAuthHeaders() },
       body: JSON.stringify({ booking })
     });
     const order = await parseJsonResponse(
       orderResponse,
-      'Payment server is not available. Open this page from the Node server on localhost:3000.'
+      'Payment server is not available. Please try again later.'
     );
 
     if (!orderResponse.ok) {
@@ -298,7 +316,7 @@ async function startPpfPayment() {
 
         const verifyResponse = await fetch(getApiUrl('/api/verify-ppf-payment'), {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          headers: { 'Content-Type': 'application/json', ...getAuthHeaders() },
           body: JSON.stringify({
             booking: createBookingPayload({ bookingId: order.bookingId }),
             bookingId: order.bookingId,
@@ -307,11 +325,19 @@ async function startPpfPayment() {
         });
         const result = await parseJsonResponse(
           verifyResponse,
-          'Payment verification server is not available. Open this page from the Node server on localhost:3000.'
+          'Payment verification server is not available. Please try again later.'
         );
 
         if (!verifyResponse.ok) {
           throw new Error(result.error || 'Payment verification failed.');
+        }
+
+        // Store confirmed booking in sessionStorage so booking-request.html
+        // can display it without needing a server-side lookup (stateless).
+        try {
+          sessionStorage.setItem('foursix_last_booking', JSON.stringify(result.booking || result));
+        } catch (_) {
+          // sessionStorage write failure is non-fatal
         }
 
         paymentStatus.textContent = `Payment complete. Booking ID: ${result.bookingId}`;

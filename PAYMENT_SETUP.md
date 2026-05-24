@@ -1,79 +1,120 @@
-# FourSix Payment Setup
+# FourSix Detailing — Payment Gateway Setup
 
-This project now has a Node/Express backend for PPF prepaid bookings.
+The payment gateway uses **Supabase Edge Functions** as a serverless backend.
+This means the site works fully on **GitHub Pages** — no separate server needed.
 
-## 1. Install Dependencies
+---
 
-```bash
-npm install
+## How it Works
+
+```
+GitHub Pages (static)          Supabase Edge Functions (serverless)        Razorpay
+  booking.html          →→→    foursix-config         →→→    public key returned
+  (Pay button clicked)  →→→    foursix-create-order   →→→    order created with secret
+  (Payment done)        →→→    foursix-verify-payment →→→    signature verified
+  ↓
+  sessionStorage  →  booking-request.html  →  WhatsApp
 ```
 
-## 2. Configure Environment Variables
+---
 
-Create a `.env` file from `.env.example`:
+## 1. Supabase Project
 
-```bash
-copy .env.example .env
+Project URL: `https://jxdclevjxcgpvkjwpgow.supabase.co`  
+Project Ref: `jxdclevjxcgpvkjwpgow`
+
+---
+
+## 2. Deploy Edge Functions
+
+### Step A — Get a Personal Access Token
+
+1. Go to: https://supabase.com/dashboard/account/tokens
+2. Click **Generate new token**, name it `foursix-deploy`
+3. Copy the token (starts with `sbp_...`)
+
+### Step B — Login and Deploy
+
+```powershell
+cd "46 Detailing"
+npx supabase login --token YOUR_SBP_TOKEN_HERE
+npx supabase functions deploy foursix-config --project-ref jxdclevjxcgpvkjwpgow
+npx supabase functions deploy foursix-create-order --project-ref jxdclevjxcgpvkjwpgow
+npx supabase functions deploy foursix-verify-payment --project-ref jxdclevjxcgpvkjwpgow
 ```
 
-Fill in:
+---
 
-```bash
-RAZORPAY_KEY_ID=your_razorpay_test_key_id
-RAZORPAY_KEY_SECRET=your_razorpay_key_secret
-RESEND_API_KEY=your_resend_api_key
-RESEND_FROM=FourSix Detailing <your_verified_sender@yourdomain.com>
-BOOKING_NOTIFY_TO=booking_receiver@example.com
-ALLOWED_ORIGINS=https://shawreel24.github.io
-PORT=3000
+## 3. Set Supabase Secrets
+
+After deploying, add your Razorpay keys as Supabase secrets:
+
+```powershell
+npx supabase secrets set RAZORPAY_KEY_ID=rzp_test_XXXXXXX --project-ref jxdclevjxcgpvkjwpgow
+npx supabase secrets set RAZORPAY_KEY_SECRET=YOUR_SECRET --project-ref jxdclevjxcgpvkjwpgow
 ```
 
-For testing, use Razorpay keys that start with `rzp_test_`. Do not put `RAZORPAY_KEY_SECRET` in browser JavaScript or commit it to GitHub.
+Optional — email notifications via Resend:
+```powershell
+npx supabase secrets set RESEND_API_KEY=re_XXXXXXX --project-ref jxdclevjxcgpvkjwpgow
+npx supabase secrets set RESEND_FROM="FourSix Detailing <you@yourdomain.com>" --project-ref jxdclevjxcgpvkjwpgow
+npx supabase secrets set BOOKING_NOTIFY_TO=owner@example.com --project-ref jxdclevjxcgpvkjwpgow
+```
 
-Do not commit `.env`.
+You can also set secrets in the Supabase Dashboard:
+→ Project → Edge Functions → Manage secrets
 
-## 3. Run Locally
+---
 
-```bash
+## 4. Verify Deployment
+
+Test the config endpoint in your browser:
+
+```
+https://jxdclevjxcgpvkjwpgow.supabase.co/functions/v1/foursix-config
+```
+
+You should see JSON with your `razorpayKeyId`.
+
+---
+
+## 5. GitHub Pages
+
+The `assets/js/site-config.js` is already configured with the Supabase URL.
+Just push to GitHub — payment will work automatically on GitHub Pages.
+
+```
+https://shawreel24.github.io/<repo-name>/booking.html?service=paintProtectionFilm
+```
+
+---
+
+## Local Development
+
+The local Express server (`server.js`) still works for local testing.
+Set `apiBaseUrl: ''` in `site-config.js` to use it, or keep the Supabase URL to test cloud functions locally.
+
+```powershell
 npm start
+# Open: http://localhost:3000/booking.html?service=paintProtectionFilm
 ```
 
-Open:
+---
 
-```text
-http://localhost:3000/booking.html?service=paintProtectionFilm
-```
+## Payment Flow
 
-## GitHub Pages
+1. Customer selects **Paint Protection Film**
+2. Payment Structure panel appears showing Rs. 10,000 prepaid + balance
+3. Customer clicks **Pay Prepaid Amount**
+4. Razorpay checkout opens (UPI, Card, Net Banking, Wallets)
+5. Payment success → `foursix-verify-payment` verifies the signature
+6. Booking stored in `sessionStorage` → redirect to `booking-request.html`
+7. Customer clicks **Send Booking Request** → WhatsApp opens with all booking details
 
-GitHub Pages cannot run `server.js`, but it can call a deployed Node backend.
+---
 
-1. Deploy this project to a Node host such as Render, Railway, or Vercel.
-2. Add the `.env` values to that host, including:
+## Security
 
-```bash
-ALLOWED_ORIGINS=https://shawreel24.github.io
-```
-
-3. In `assets/js/site-config.js`, set `apiBaseUrl` to the deployed backend URL:
-
-```js
-window.FOURSIX_CONFIG = {
-  apiBaseUrl: 'https://your-backend.example.com'
-};
-```
-
-Keep `apiBaseUrl` blank for local testing on `http://localhost:3000`.
-
-## Current Flow
-
-1. Customer selects Paint Protection Film.
-2. Normal booking submit is hidden.
-3. Customer pays the Rs. 10,000 prepaid amount through Razorpay UPI-only Checkout.
-4. Backend verifies the Razorpay payment signature.
-5. Backend creates a unique booking ID, stores the paid booking in memory, and sends a Resend email if email env vars are configured.
-6. Browser opens a WhatsApp booking message with the booking ID.
-
-## Important
-
-The current booking store is in memory. For production, connect a database so paid bookings survive server restarts.
+- `RAZORPAY_KEY_SECRET` never touches the browser — lives only in Supabase secrets
+- Signature verification happens server-side in the Edge Function
+- The publishable key in `site-config.js` is intentionally public (like a Razorpay Key ID)
