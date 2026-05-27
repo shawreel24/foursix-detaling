@@ -1021,6 +1021,7 @@ ul { list-style: none; }
   .logo { font-size: clamp(0.9rem, 4vw, 1.2rem); }
   .logo img { height: 3rem; }
   .nav-links { display: none; }
+  .hero { align-items: center; padding-top: 6rem; padding-bottom: 4rem; }
   .hero-title { font-size: clamp(3.5rem, 12vw, 5rem); }
   .hero-meta { flex-direction: column; align-items: flex-start; gap: 1.5rem; width: 100%; }
   .hero-meta .btn { width: 100%; justify-content: center; }
