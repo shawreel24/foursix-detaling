@@ -262,7 +262,6 @@ ul { list-style: none; }
   text-transform: uppercase;
   margin-bottom: 0;
   letter-spacing: -0.02em;
-  word-break: break-word;
 }
 
 .hero-title .accent-text {
