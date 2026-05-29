@@ -83,6 +83,24 @@ const ppfPaymentButton = document.getElementById('ppfPaymentButton');
 const paymentStatus = document.getElementById('paymentStatus');
 const ppfPrepaidAmount = 10000;
 let razorpayKeyId = '';
+let cachedOrderPromise = null;
+
+function prefetchPpfOrder() {
+  if (cachedOrderPromise) return;
+  const booking = createBookingPayload();
+  cachedOrderPromise = fetch(getApiUrl('/api/create-ppf-order'), {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...getAuthHeaders() },
+    body: JSON.stringify({ booking })
+  }).then(async (response) => {
+    const order = await parseJsonResponse(response, 'Payment server is not available. Please try again later.');
+    if (!response.ok) throw new Error(order.error || 'Could not create payment order.');
+    return order;
+  }).catch(err => {
+    cachedOrderPromise = null;
+    throw err;
+  });
+}
 
 function getApiUrl(path) {
   const baseUrl = window.FOURSIX_CONFIG?.apiBaseUrl?.replace(/\/$/, '') || '';
@@ -190,6 +208,7 @@ function updatePrice() {
     prepaidAmount.textContent = formatPrice(ppfPrepaidAmount);
     balanceAmount.textContent = formatPrice(Math.max(price - ppfPrepaidAmount, 0));
     ppfPaymentButton.disabled = false;
+    prefetchPpfOrder();
   } else {
     prepaidAmount.textContent = '-';
     balanceAmount.textContent = '-';
@@ -247,19 +266,11 @@ async function startPpfPayment() {
 
   try {
     const booking = createBookingPayload();
-    const orderResponse = await fetch(getApiUrl('/api/create-ppf-order'), {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', ...getAuthHeaders() },
-      body: JSON.stringify({ booking })
-    });
-    const order = await parseJsonResponse(
-      orderResponse,
-      'Payment server is not available. Please try again later.'
-    );
-
-    if (!orderResponse.ok) {
-      throw new Error(order.error || 'Could not create payment order.');
+    
+    if (!cachedOrderPromise) {
+      prefetchPpfOrder();
     }
+    const order = await cachedOrderPromise;
 
     const checkout = new Razorpay({
       key: razorpayKeyId,
