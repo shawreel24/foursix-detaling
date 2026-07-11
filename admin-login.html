@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin Login | FOURSIX DETAILING</title>
+<meta name="robots" content="noindex, nofollow">
+<link rel="icon" type="image/png" href="assets/logo/Foursix dns.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@300;400;500;700&family=Manrope:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #050505;
+    --surface: #0d0d0d;
+    --surface-2: #141414;
+    --text: #F2EFE9;
+    --text-muted: #888;
+    --accent: #E84A27;
+    --accent-dim: rgba(232, 74, 39, 0.15);
+    --border: rgba(255,255,255,0.08);
+    --border-focus: rgba(232, 74, 39, 0.5);
+    --error: #ff5252;
+    --ease: cubic-bezier(0.19, 1, 0.22, 1);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html, body {
+    height: 100%;
+    font-family: 'Manrope', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  body {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    overflow: hidden;
+  }
+
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(232,74,39,0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(232,74,39,0.03) 1px, transparent 1px);
+    background-size: 60px 60px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  body::after {
+    content: '';
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 600px;
+    height: 600px;
+    background: radial-gradient(circle, rgba(232,74,39,0.06) 0%, transparent 70%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .login-wrap {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    max-width: 420px;
+    padding: 1rem;
+    animation: fadeSlide 0.8s var(--ease) both;
+  }
+
+  @keyframes fadeSlide {
+    from { opacity: 0; transform: translateY(24px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .login-brand {
+    text-align: center;
+    margin-bottom: 2.5rem;
+  }
+
+  .login-brand img {
+    height: 56px;
+    width: auto;
+    margin: 0 auto 1rem;
+    display: block;
+  }
+
+  .login-brand h1 {
+    font-family: 'Oswald', sans-serif;
+    font-size: 1.4rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    font-weight: 500;
+  }
+
+  .login-brand h1 span {
+    color: var(--text-muted);
+  }
+
+  .login-brand p {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    margin-top: 0.4rem;
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    font-family: 'Oswald', sans-serif;
+  }
+
+  .login-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 2.5rem;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .login-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--accent), transparent);
+    opacity: 0.6;
+  }
+
+  .login-title {
+    font-family: 'Oswald', sans-serif;
+    font-size: 1.1rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    font-weight: 400;
+    color: var(--text-muted);
+    margin-bottom: 2rem;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+
+  .login-title::before {
+    content: '';
+    width: 20px;
+    height: 2px;
+    background: var(--accent);
+    flex-shrink: 0;
+  }
+
+  .field {
+    margin-bottom: 1.25rem;
+  }
+
+  .field label {
+    display: block;
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--text-muted);
+    margin-bottom: 0.5rem;
+    font-family: 'Oswald', sans-serif;
+  }
+
+  .field input {
+    width: 100%;
+    padding: 0.875rem 1rem;
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    color: var(--text);
+    font-family: 'Manrope', sans-serif;
+    font-size: 0.9rem;
+    outline: none;
+    transition: border-color 0.3s ease;
+  }
+
+  .field input:focus {
+    border-color: var(--border-focus);
+  }
+
+  .field input::placeholder {
+    color: rgba(255,255,255,0.2);
+  }
+
+  .field input:read-only {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+
+  .email-hint {
+    font-size: 0.7rem;
+    color: var(--text-muted);
+    margin-top: 0.35rem;
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+  }
+
+  .email-hint::before {
+    content: '✓';
+    color: var(--accent);
+    font-size: 0.65rem;
+  }
+
+  .login-btn {
+    width: 100%;
+    padding: 1rem;
+    margin-top: 0.5rem;
+    background: var(--accent);
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    font-family: 'Oswald', sans-serif;
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    font-weight: 500;
+    cursor: pointer;
+    transition: opacity 0.2s ease, transform 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 48px;
+  }
+
+  .login-btn:hover { opacity: 0.9; transform: translateY(-1px); }
+  .login-btn:active { transform: translateY(0); }
+  .login-btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+
+  .btn-spinner {
+    display: none;
+    width: 16px;
+    height: 16px;
+    border: 2px solid rgba(255,255,255,0.3);
+    border-top-color: #fff;
+    border-radius: 50%;
+    animation: spin 0.7s linear infinite;
+  }
+
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .login-btn.loading .btn-text { display: none; }
+  .login-btn.loading .btn-spinner { display: block; }
+
+  .error-msg {
+    display: none;
+    padding: 0.75rem 1rem;
+    background: rgba(255, 82, 82, 0.1);
+    border: 1px solid rgba(255, 82, 82, 0.25);
+    border-radius: 8px;
+    color: #ff5252;
+    font-size: 0.8rem;
+    margin-top: 1rem;
+    text-align: center;
+  }
+
+  .error-msg.visible { display: block; }
+
+  .login-footer {
+    text-align: center;
+    margin-top: 1.5rem;
+    font-size: 0.7rem;
+    color: var(--text-muted);
+    letter-spacing: 0.05em;
+  }
+
+  .login-footer a {
+    color: var(--text-muted);
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+
+  .login-footer a:hover { color: var(--text); }
+</style>
+</head>
+<body>
+<div class="login-wrap">
+  <div class="login-brand">
+    <img src="assets/logo/Foursix dns.png" alt="FourSix Detailing Logo">
+    <h1>FOUR<span>SIX</span> <span>DETAILING</span></h1>
+    <p>Admin Portal</p>
+  </div>
+
+  <div class="login-card">
+    <p class="login-title">Sign In</p>
+
+    <form id="loginForm" autocomplete="off">
+      <div class="field">
+        <label for="adminEmail">Admin Email</label>
+        <input
+          type="email"
+          id="adminEmail"
+          value="valapclawmkima81@gmail.com"
+          readonly
+          autocomplete="username"
+        >
+        <p class="email-hint">Authorized admin account</p>
+      </div>
+
+      <div class="field">
+        <label for="adminPassword">Password</label>
+        <input
+          type="password"
+          id="adminPassword"
+          placeholder="Enter admin password"
+          autocomplete="current-password"
+          required
+        >
+      </div>
+
+      <button type="submit" class="login-btn" id="loginBtn">
+        <span class="btn-text">Access Dashboard</span>
+        <span class="btn-spinner"></span>
+      </button>
+
+      <div class="error-msg" id="errorMsg">Invalid password. Please try again.</div>
+    </form>
+  </div>
+
+  <div class="login-footer">
+    <a href="index.html">&#8592; Back to Website</a>
+  </div>
+</div>
+
+<script>
+  if (sessionStorage.getItem('fs_admin_auth') === 'true') {
+    window.location.replace('admin.html');
+  }
+
+  const form = document.getElementById('loginForm');
+  const btn = document.getElementById('loginBtn');
+  const errorMsg = document.getElementById('errorMsg');
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const password = document.getElementById('adminPassword').value;
+    if (!password) return;
+
+    btn.classList.add('loading');
+    btn.disabled = true;
+    errorMsg.classList.remove('visible');
+
+    try {
+      const res = await fetch('/api/admin/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: 'valapclawmkima81@gmail.com', password })
+      });
+
+      const data = await res.json();
+
+      if (res.ok && data.ok) {
+        sessionStorage.setItem('fs_admin_auth', 'true');
+        sessionStorage.setItem('fs_admin_token', data.token);
+        window.location.replace('admin.html');
+      } else {
+        errorMsg.textContent = data.error || 'Invalid password. Please try again.';
+        errorMsg.classList.add('visible');
+      }
+    } catch {
+      errorMsg.textContent = 'Server connection failed. Make sure the server is running.';
+      errorMsg.classList.add('visible');
+    } finally {
+      btn.classList.remove('loading');
+      btn.disabled = false;
+    }
+  });
+</script>
+</body>
+</html>
