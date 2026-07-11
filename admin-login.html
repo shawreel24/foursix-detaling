@@ -298,9 +298,9 @@
         <input
           type="email"
           id="adminEmail"
-          value="valapclawmkima81@gmail.com"
-          readonly
+          placeholder="Enter admin email"
           autocomplete="username"
+          required
         >
         <p class="email-hint">Authorized admin account</p>
       </div>
@@ -350,8 +350,9 @@
 
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
+    const email = document.getElementById('adminEmail').value;
     const password = document.getElementById('adminPassword').value;
-    if (!password) return;
+    if (!email || !password) return;
 
     btn.classList.add('loading');
     btn.disabled = true;
@@ -361,7 +362,7 @@
       const res = await fetch(getApiUrl('/api/admin/login'), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email: 'valapclawmkima81@gmail.com', password })
+        body: JSON.stringify({ email, password })
       });
 
       const data = await res.json();
