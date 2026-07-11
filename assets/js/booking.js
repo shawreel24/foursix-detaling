@@ -120,10 +120,14 @@ function getApiUrl(path) {
   return `${baseUrl}${path}`;
 }
 
-// Returns Authorization header for Supabase Edge Function calls.
-// No longer needed since functions use --no-verify-jwt, but kept as a no-op for safety.
+// Returns Authorization and apikey headers for Supabase Edge Function calls.
 function getAuthHeaders() {
-  return {};
+  const headers = {};
+  const anonKey = window.FOURSIX_CONFIG?.supabaseAnonKey;
+  if (anonKey) {
+    headers['apikey'] = anonKey;
+  }
+  return headers;
 }
 
 function formatPrice(price) {
@@ -414,7 +418,9 @@ function sendBookingRequest(event) {
 // Load dynamic pricing from database
 async function loadDynamicPricing() {
   try {
-    const res = await fetch(getApiUrl('/api/admin/pricing'));
+    const res = await fetch(getApiUrl('/api/admin/pricing'), {
+      headers: getAuthHeaders()
+    });
     if (!res.ok) throw new Error('Failed to fetch pricing');
     const data = await res.json();
     if (data.pricing && Object.keys(data.pricing).length > 0) {
