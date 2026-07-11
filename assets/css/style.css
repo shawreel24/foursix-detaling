@@ -1028,6 +1028,11 @@ ul { list-style: none; }
 
 /* RESPONSIVE */
 @media (max-width: 1024px) {
+  .nav { padding: 1.5rem 5vw; }
+  .nav-links { display: none; }
+  .nav-right { display: none; }
+  .nav-hamburger { display: flex; }
+
   .hero-content { flex-direction: column; align-items: flex-start; gap: 2rem; }
   .hero-meta { max-width: 100%; flex-direction: row; justify-content: space-between; align-items: flex-end; width: 100%; }
   .hero-bg { width: 100%; opacity: 0.55; }
@@ -1050,11 +1055,8 @@ ul { list-style: none; }
 }
 
 @media (max-width: 768px) {
-  .nav { padding: 1.5rem 5vw; }
   .logo { font-size: clamp(0.9rem, 4vw, 1.2rem); }
   .logo img { height: 3rem; }
-  .nav-links { display: none; }
-  .nav-right { display: none; }
   .hero { align-items: flex-end; padding-top: 0; padding-bottom: 5vh; }
   .hero-title { font-size: clamp(3rem, 13vw, 4.5rem); word-break: normal; overflow-wrap: normal; }
   .hero-meta { flex-direction: column; align-items: flex-start; gap: 1.5rem; width: 100%; }
@@ -1063,7 +1065,6 @@ ul { list-style: none; }
   .booking-panel { grid-template-columns: 1fr; }
   .footer-bottom { flex-direction: column; gap: 1rem; text-align: center; justify-content: center; align-items: center; }
   .footer-bottom div { justify-content: center; }
-  .nav-hamburger { display: flex; }
 }
 
 /* ── NAV RIGHT (desktop) ── */
@@ -1124,7 +1125,7 @@ ul { list-style: none; }
   transform: translateY(0);
 }
 
-@media (max-width: 768px) {
+@media (max-width: 1024px) {
   .mobile-menu { display: block; }
 }
 
@@ -1189,7 +1190,7 @@ ul { list-style: none; }
   opacity: 1;
 }
 
-@media (max-width: 768px) {
+@media (max-width: 1024px) {
   .mobile-menu-backdrop { display: block; }
 }
 
