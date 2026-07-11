@@ -22,9 +22,30 @@
     <a href="#work">Work</a>
     <a href="#contact">Contact</a>
   </div>
-  <a href="admin-login.html" class="nav-login-link">Login</a>
-  <a href="booking.html" class="btn btn-primary" style="padding: 0.75rem 1.5rem; font-size: 0.8rem;"><span>Book Now</span></a>
+  <div class="nav-right">
+    <a href="admin-login.html" class="nav-login-link">Login</a>
+    <a href="booking.html" class="btn btn-primary" style="padding: 0.75rem 1.5rem; font-size: 0.8rem;"><span>Book Now</span></a>
+  </div>
+  <!-- Mobile hamburger -->
+  <button class="nav-hamburger" id="navHamburger" aria-label="Open menu" aria-expanded="false">
+    <span></span><span></span><span></span>
+  </button>
 </nav>
+
+<!-- Mobile menu overlay -->
+<div class="mobile-menu" id="mobileMenu">
+  <a href="booking.html" class="mobile-menu-item">
+    <span class="mobile-menu-num">01</span>
+    <span class="mobile-menu-label">Book Now</span>
+    <span class="mobile-menu-arrow">&#8594;</span>
+  </a>
+  <a href="admin-login.html" class="mobile-menu-item">
+    <span class="mobile-menu-num">02</span>
+    <span class="mobile-menu-label">Login</span>
+    <span class="mobile-menu-arrow">&#8594;</span>
+  </a>
+</div>
+<div class="mobile-menu-backdrop" id="mobileMenuBackdrop"></div>
 
 <section class="hero" id="home">
   <div class="hero-bg"><img src="assets/images/IMG_8030.jpg" alt="FourSix Detailing"></div>
