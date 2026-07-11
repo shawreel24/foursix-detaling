@@ -113,6 +113,7 @@ function getApiUrl(path) {
       '/api/create-ppf-order': '/foursix-create-order',
       '/api/verify-ppf-payment': '/foursix-verify-payment',
       '/api/admin/bookings': '/foursix-admin/bookings',
+      '/api/admin/pricing': '/foursix-admin/pricing',
     };
     const edgePath = edgeFunctionMap[path];
     if (edgePath) return `${baseUrl}${edgePath}`;
