@@ -1,4 +1,4 @@
-const bookingPrices = {
+const defaultBookingPrices = {
   detailing: {
     label: 'Car Detailing',
     packages: [
@@ -59,6 +59,8 @@ const bookingPrices = {
     ]
   }
 };
+
+let bookingPrices = JSON.parse(JSON.stringify(defaultBookingPrices));
 
 const vehicleLabels = {
   small: 'Small Car',
@@ -409,10 +411,29 @@ function sendBookingRequest(event) {
   window.open(`https://wa.me/919506745852?text=${encodeURIComponent(message)}`, '_blank', 'noopener');
 }
 
+// Load dynamic pricing from database
+async function loadDynamicPricing() {
+  try {
+    const res = await fetch(getApiUrl('/api/admin/pricing'));
+    if (!res.ok) throw new Error('Failed to fetch pricing');
+    const data = await res.json();
+    if (data.pricing && Object.keys(data.pricing).length > 0) {
+      bookingPrices = data.pricing;
+      // Re-populate dropdowns with updated prices
+      populateServices();
+      populatePackages();
+      updatePrice();
+    }
+  } catch (err) {
+    console.warn('Could not load live pricing, using default offline pricing:', err);
+  }
+}
+
 populateServices();
 populatePackages();
 loadPaymentConfig();
 updatePrice();
+loadDynamicPricing();
 
 serviceSelect.addEventListener('change', () => {
   populatePackages();

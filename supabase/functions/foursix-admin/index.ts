@@ -108,10 +108,11 @@ Deno.serve(async (req) => {
     }
   }
 
-  // Allow public POST to bookings (WhatsApp/customer requests)
+  // Allow public POST to bookings (WhatsApp requests) and GET to pricing (catalog prices)
   const isPublicBookingCreate = (endpoint === 'bookings' && req.method === 'POST');
+  const isPublicPricingRead = (endpoint === 'pricing' && req.method === 'GET');
 
-  if (!isPublicBookingCreate) {
+  if (!isPublicBookingCreate && !isPublicPricingRead) {
     // 2. Token Verification for all other admin endpoints
     const authHeader = req.headers.get('authorization') || '';
     const token = authHeader.replace('Bearer ', '').trim();
