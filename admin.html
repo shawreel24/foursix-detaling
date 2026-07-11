@@ -891,7 +891,13 @@ if (!adminToken) {
   window.location.replace('admin-login.html?v=4');
 }
 
-document.getElementById('adminEmailDisplay').textContent = 'valapclawmkima81@gmail.com';
+try {
+  const decodedPayload = atob(adminToken.split(':')[0]);
+  const adminEmail = decodedPayload.split('|')[0];
+  document.getElementById('adminEmailDisplay').textContent = adminEmail;
+} catch (e) {
+  document.getElementById('adminEmailDisplay').textContent = 'Admin';
+}
 
 document.getElementById('logoutBtn').addEventListener('click', () => {
   sessionStorage.removeItem('fs_admin_auth');

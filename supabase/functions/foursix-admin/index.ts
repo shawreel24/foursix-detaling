@@ -36,7 +36,8 @@ async function verifyToken(token: string, passwordSecret: string): Promise<boole
     if (parts.length !== 2) return false;
     const [payload, signature] = parts;
     const [email, expiryStr] = payload.split('|');
-    if (email !== 'valapclawmkima81@gmail.com') return false;
+    const validEmails = ['valapclawmkima81@gmail.com', 'aboihahmar13@gmail.com'];
+    if (!validEmails.includes(email)) return false;
     if (Date.now() > Number(expiryStr)) return false;
 
     const encoder = new TextEncoder();
@@ -89,7 +90,8 @@ Deno.serve(async (req) => {
   if (endpoint === 'login' && req.method === 'POST') {
     try {
       const { email, password } = await req.json();
-      if (email !== 'valapclawmkima81@gmail.com' || password !== adminPassword) {
+      const validEmails = ['valapclawmkima81@gmail.com', 'aboihahmar13@gmail.com'];
+      if (!validEmails.includes(email) || password !== adminPassword) {
         return new Response(JSON.stringify({ error: 'Invalid credentials' }), {
           headers: { ...corsHeaders, 'Content-Type': 'application/json' },
           status: 401,
