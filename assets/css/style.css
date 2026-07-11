@@ -1142,6 +1142,7 @@ ul { list-style: none; }
 }
 
 .mobile-menu-backdrop.open {
+  display: block;
   opacity: 1;
 }
 
@@ -1152,7 +1153,6 @@ ul { list-style: none; }
   .nav-right { display: none; }
   .nav-hamburger { display: flex; }
   .mobile-menu { display: block; }
-  .mobile-menu-backdrop { display: block; }
 
   .hero-content { flex-direction: column; align-items: flex-start; gap: 2rem; }
   .hero-meta { max-width: 100%; flex-direction: row; justify-content: space-between; align-items: flex-end; width: 100%; }
