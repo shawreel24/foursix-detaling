@@ -330,9 +330,18 @@
   </div>
 </div>
 
+<script src="assets/js/site-config.js"></script>
 <script>
   if (sessionStorage.getItem('fs_admin_auth') === 'true') {
     window.location.replace('admin.html');
+  }
+
+  function getApiUrl(path) {
+    const baseUrl = window.FOURSIX_CONFIG?.apiBaseUrl?.replace(/\/$/, '') || '';
+    if (baseUrl.includes('supabase.co')) {
+      return `${baseUrl}${path.replace('/api/admin', '/foursix-admin')}`;
+    }
+    return `${baseUrl}${path}`;
   }
 
   const form = document.getElementById('loginForm');
@@ -349,7 +358,7 @@
     errorMsg.classList.remove('visible');
 
     try {
-      const res = await fetch('/api/admin/login', {
+      const res = await fetch(getApiUrl('/api/admin/login'), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email: 'valapclawmkima81@gmail.com', password })

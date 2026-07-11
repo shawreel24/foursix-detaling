@@ -881,6 +881,7 @@
 <!-- TOAST CONTAINER -->
 <div class="toast-container" id="toastContainer"></div>
 
+<script src="assets/js/site-config.js"></script>
 <script>
 // ================================================
 // AUTH GUARD
@@ -901,6 +902,14 @@ document.getElementById('logoutBtn').addEventListener('click', () => {
 // ================================================
 // HELPERS
 // ================================================
+function getApiUrl(path) {
+  const baseUrl = window.FOURSIX_CONFIG?.apiBaseUrl?.replace(/\/$/, '') || '';
+  if (baseUrl.includes('supabase.co')) {
+    return `${baseUrl}${path.replace('/api/admin', '/foursix-admin')}`;
+  }
+  return `${baseUrl}${path}`;
+}
+
 function authHeaders() {
   return { 'Authorization': `Bearer ${adminToken}`, 'Content-Type': 'application/json' };
 }
@@ -943,7 +952,7 @@ async function loadBookings() {
   wrap.innerHTML = '<div class="loading-state"><div class="spinner"></div>Loading bookings...</div>';
 
   try {
-    const res = await fetch('/api/admin/bookings', { headers: authHeaders() });
+    const res = await fetch(getApiUrl('/api/admin/bookings'), { headers: authHeaders() });
     if (res.status === 401) { logout(); return; }
     const data = await res.json();
     allBookings = data.bookings || [];
@@ -1139,7 +1148,7 @@ document.getElementById('saveBookingBtn').addEventListener('click', async () => 
   };
 
   try {
-    const res = await fetch(`/api/admin/bookings/${currentEditId}`, {
+    const res = await fetch(getApiUrl(`/api/admin/bookings/${currentEditId}`), {
       method: 'PATCH',
       headers: authHeaders(),
       body: JSON.stringify(updates)
@@ -1169,7 +1178,7 @@ async function deleteBooking(bookingId) {
   if (!confirm(`Delete booking ${bookingId}? This cannot be undone.`)) return;
 
   try {
-    const res = await fetch(`/api/admin/bookings/${bookingId}`, {
+    const res = await fetch(getApiUrl(`/api/admin/bookings/${bookingId}`), {
       method: 'DELETE',
       headers: authHeaders()
     });
@@ -1195,7 +1204,7 @@ async function loadPricing() {
   container.innerHTML = '<div class="loading-state"><div class="spinner"></div>Loading pricing...</div>';
 
   try {
-    const res = await fetch('/api/admin/pricing', { headers: authHeaders() });
+    const res = await fetch(getApiUrl('/api/admin/pricing'), { headers: authHeaders() });
     if (res.status === 401) { logout(); return; }
     const data = await res.json();
     currentPricing = data.pricing;
@@ -1267,7 +1276,7 @@ document.getElementById('savePricingBtn').addEventListener('click', async () => 
   });
 
   try {
-    const res = await fetch('/api/admin/pricing', {
+    const res = await fetch(getApiUrl('/api/admin/pricing'), {
       method: 'PUT',
       headers: authHeaders(),
       body: JSON.stringify({ pricing: updated })

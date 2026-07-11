@@ -2,6 +2,7 @@
 // Deploy: supabase functions deploy foursix-verify-payment
 // Secrets needed: RAZORPAY_KEY_SECRET, RESEND_API_KEY (optional), RESEND_FROM (optional), BOOKING_NOTIFY_TO (optional)
 
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.39.8';
 import { getCorsHeaders } from '../_shared/cors.ts';
 
 async function verifyRazorpaySignature(
@@ -135,6 +136,36 @@ Deno.serve(async (req) => {
       razorpayPaymentId: paymentId,
       paidAt: new Date().toISOString(),
     };
+
+    // Save booking to Supabase Database
+    try {
+      const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
+      const supabaseServiceRoleKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
+      const supabase = createClient(supabaseUrl, supabaseServiceRoleKey);
+
+      const { error: dbError } = await supabase
+        .from('bookings')
+        .insert({
+          booking_id: bookingId,
+          customer: booking.customer,
+          service: booking.service,
+          package: booking.package,
+          vehicle: booking.vehicle,
+          total_price: booking.totalPrice,
+          prepaid_amount: booking.prepaidAmount,
+          balance_amount: booking.balanceAmount,
+          notes: booking.notes,
+          razorpay_order_id: orderId,
+          razorpay_payment_id: paymentId,
+          paid_at: confirmedBooking.paidAt,
+        });
+
+      if (dbError) {
+        console.error('[foursix-verify-payment] DB Error:', dbError.message);
+      }
+    } catch (e) {
+      console.error('[foursix-verify-payment] DB Connection/Insert Error:', e.message);
+    }
 
     // Send email notification (non-blocking — don't fail the response if email fails)
     sendBookingEmail(confirmedBooking).catch((err) =>

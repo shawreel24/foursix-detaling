@@ -110,6 +110,7 @@ function getApiUrl(path) {
       '/api/config': '/foursix-config',
       '/api/create-ppf-order': '/foursix-create-order',
       '/api/verify-ppf-payment': '/foursix-verify-payment',
+      '/api/admin/bookings': '/foursix-admin/bookings',
     };
     const edgePath = edgeFunctionMap[path];
     if (edgePath) return `${baseUrl}${edgePath}`;
@@ -396,6 +397,14 @@ function sendBookingRequest(event) {
     ...paymentLines,
     `Notes: ${notes}`
   ].join('\n');
+
+  // Save booking details to Supabase database (non-blocking)
+  const payload = createBookingPayload();
+  fetch(getApiUrl('/api/admin/bookings'), {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ booking: payload })
+  }).catch(err => console.error('Failed to save booking to Supabase:', err));
 
   window.open(`https://wa.me/919506745852?text=${encodeURIComponent(message)}`, '_blank', 'noopener');
 }
