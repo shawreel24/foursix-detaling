@@ -888,7 +888,7 @@
 // ================================================
 const adminToken = sessionStorage.getItem('fs_admin_token');
 if (!adminToken) {
-  window.location.replace('admin-login.html');
+  window.location.replace('admin-login.html?v=4');
 }
 
 document.getElementById('adminEmailDisplay').textContent = 'valapclawmkima81@gmail.com';
@@ -896,7 +896,7 @@ document.getElementById('adminEmailDisplay').textContent = 'valapclawmkima81@gma
 document.getElementById('logoutBtn').addEventListener('click', () => {
   sessionStorage.removeItem('fs_admin_auth');
   sessionStorage.removeItem('fs_admin_token');
-  window.location.replace('admin-login.html');
+  window.location.replace('admin-login.html?v=4');
 });
 
 // ================================================
@@ -1300,7 +1300,7 @@ document.getElementById('savePricingBtn').addEventListener('click', async () => 
 function logout() {
   sessionStorage.removeItem('fs_admin_auth');
   sessionStorage.removeItem('fs_admin_token');
-  window.location.replace('admin-login.html');
+  window.location.replace('admin-login.html?v=4');
 }
 
 // ================================================
