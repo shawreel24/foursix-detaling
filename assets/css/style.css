@@ -1079,37 +1079,31 @@ ul { list-style: none; }
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  gap: 5px;
+  gap: 6px;
   width: 40px;
   height: 40px;
   background: transparent;
-  border: 1px solid rgba(255,255,255,0.15);
-  border-radius: 8px;
+  border: none;
   cursor: pointer;
   padding: 0;
   z-index: 200;
   position: relative;
-  transition: border-color 0.3s ease;
-}
-
-.nav-hamburger:hover {
-  border-color: rgba(255,255,255,0.35);
 }
 
 .nav-hamburger span {
   display: block;
-  width: 18px;
-  height: 1.5px;
-  background: #F2EFE9;
+  width: 28px;
+  height: 2px;
+  background: #ffffff;
   border-radius: 2px;
   transition: transform 0.4s cubic-bezier(0.19,1,0.22,1), opacity 0.3s ease;
   transform-origin: center;
 }
 
 /* Animated X when open */
-.nav-hamburger.open span:nth-child(1) { transform: translateY(6.5px) rotate(45deg); }
+.nav-hamburger.open span:nth-child(1) { transform: translateY(8px) rotate(45deg); }
 .nav-hamburger.open span:nth-child(2) { opacity: 0; transform: scaleX(0); }
-.nav-hamburger.open span:nth-child(3) { transform: translateY(-6.5px) rotate(-45deg); }
+.nav-hamburger.open span:nth-child(3) { transform: translateY(-8px) rotate(-45deg); }
 
 /* ── MOBILE MENU ── */
 .mobile-menu {
