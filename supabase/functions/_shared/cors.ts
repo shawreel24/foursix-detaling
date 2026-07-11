@@ -3,6 +3,8 @@
 
 const allowedOrigins = [
   'https://shawreel24.github.io',
+  'https://www.foursixdetailing.in',
+  'https://foursixdetailing.in',
   'http://localhost:3000',
   'http://127.0.0.1:3000',
   'http://localhost:5500',
@@ -11,7 +13,7 @@ const allowedOrigins = [
 
 export function getCorsHeaders(req: Request): Record<string, string> {
   const origin = req.headers.get('origin') ?? '';
-  const allowOrigin = allowedOrigins.includes(origin) ? origin : allowedOrigins[0];
+  const allowOrigin = allowedOrigins.includes(origin) ? origin : allowedOrigins[1]; // fallback to custom domain
   return {
     'Access-Control-Allow-Origin': allowOrigin,
     'Access-Control-Allow-Headers': 'Content-Type, Authorization',
@@ -22,7 +24,7 @@ export function getCorsHeaders(req: Request): Record<string, string> {
 
 // For simple usage without request context (preflight responses)
 export const corsHeaders: Record<string, string> = {
-  'Access-Control-Allow-Origin': 'https://shawreel24.github.io',
+  'Access-Control-Allow-Origin': 'https://www.foursixdetailing.in',
   'Access-Control-Allow-Headers': 'Content-Type, Authorization',
   'Access-Control-Allow-Methods': 'GET, POST, PUT, PATCH, DELETE, OPTIONS',
 };

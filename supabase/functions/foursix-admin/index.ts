@@ -61,14 +61,6 @@ async function verifyToken(token: string, passwordSecret: string): Promise<boole
   }
 }
 
-Deno.serve(async (req) => {
-  const corsHeaders = getCorsHeaders(req);
-
-  // Handle CORS preflight
-  if (req.method === 'OPTIONS') {
-    return new Response('ok', { headers: corsHeaders });
-  }
-
 function createBookingId(): string {
   const date = new Date();
   const stamp = date.toISOString().slice(0, 10).replace(/-/g, '');
