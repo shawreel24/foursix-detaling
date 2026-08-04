@@ -659,9 +659,133 @@ ul { list-style: none; }
   border-color: var(--accent);
 }
 
-.booking-field:nth-child(6),
+/* Full-width fields: services list, vehicle, notes, submit */
+.booking-field--full,
 .booking-submit {
   grid-column: 1 / -1;
+}
+
+/* ---- Multi-service slots ---- */
+.services-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.service-slot {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  padding: 1rem 1.25rem;
+  display: grid;
+  grid-template-columns: 1fr 1fr auto;
+  gap: 0.75rem;
+  align-items: end;
+  transition: border-color 0.3s;
+  animation: slotEnter 0.35s var(--ease) both;
+}
+
+@keyframes slotEnter {
+  from { opacity: 0; transform: translateY(-8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.service-slot:hover {
+  border-color: rgba(255,255,255,0.15);
+}
+
+.service-slot-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.service-slot-field label {
+  font-family: var(--font-display);
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  font-size: 0.78rem;
+}
+
+.service-slot-field select {
+  width: 100%;
+  min-height: 3rem;
+  background: var(--surface);
+  color: var(--text);
+  border: 1px solid var(--border);
+  padding: 0.7rem 0.9rem;
+  font-family: var(--font-body);
+  font-size: 0.95rem;
+  outline: none;
+  transition: var(--transition);
+  cursor: pointer;
+}
+
+.service-slot-field select:focus {
+  border-color: var(--accent);
+}
+
+.service-slot-field select option {
+  background: var(--surface);
+}
+
+.slot-remove-btn {
+  width: 3rem;
+  height: 3rem;
+  flex-shrink: 0;
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--text-muted);
+  font-size: 1.25rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: var(--transition);
+  line-height: 1;
+}
+
+.slot-remove-btn:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+  background: rgba(232, 74, 39, 0.08);
+}
+
+.slot-remove-btn:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+.add-service-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.85rem 1.25rem;
+  background: transparent;
+  border: 1px dashed rgba(255,255,255,0.18);
+  color: var(--text-muted);
+  font-family: var(--font-display);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  font-size: 0.82rem;
+  cursor: pointer;
+  width: 100%;
+  transition: var(--transition);
+  margin-top: 0.25rem;
+}
+
+.add-service-btn:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+  background: rgba(232, 74, 39, 0.05);
+}
+
+.add-service-btn svg {
+  transition: transform 0.3s var(--ease);
+}
+
+.add-service-btn:hover svg {
+  transform: rotate(90deg);
 }
 
 .booking-submit {
@@ -721,6 +845,14 @@ ul { list-style: none; }
 
 .price-breakdown span {
   color: var(--text-muted);
+  line-height: 1.4;
+}
+
+.price-breakdown span small {
+  display: block;
+  font-size: 0.78rem;
+  opacity: 0.6;
+  font-style: italic;
 }
 
 .price-breakdown strong {

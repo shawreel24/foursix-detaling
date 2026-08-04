@@ -50,8 +50,8 @@
   <section class="booking-hero">
     <div class="booking-hero-copy reveal">
       <p class="service-kicker">Service Booking</p>
-      <h1 class="booking-title">Choose your service and see the price.</h1>
-      <p class="booking-intro">Select a service, package, and vehicle type. The price updates instantly from the FourSix Detailing price list.</p>
+      <h1 class="booking-title">Build your detailing package.</h1>
+      <p class="booking-intro">Add one or more services, pick a package per service, and select your vehicle type. The total price updates instantly.</p>
     </div>
   </section>
 
@@ -68,17 +68,20 @@
           <input id="customerPhone" type="tel" placeholder="Your phone number">
         </div>
 
-        <div class="booking-field">
-          <label for="serviceSelect">Service</label>
-          <select id="serviceSelect"></select>
+        <!-- Multi-service selector -->
+        <div class="booking-field booking-field--full" id="servicesField">
+          <label>Services</label>
+          <div class="services-list" id="servicesList"></div>
+          <button type="button" class="add-service-btn" id="addServiceBtn">
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+              <line x1="7" y1="1" x2="7" y2="13"/>
+              <line x1="1" y1="7" x2="13" y2="7"/>
+            </svg>
+            Add Another Service
+          </button>
         </div>
 
-        <div class="booking-field">
-          <label for="packageSelect">Package</label>
-          <select id="packageSelect"></select>
-        </div>
-
-        <div class="booking-field">
+        <div class="booking-field booking-field--full">
           <label for="vehicleSelect">Vehicle Type</label>
           <select id="vehicleSelect">
             <option value="small">Small Car</option>
@@ -87,7 +90,7 @@
           </select>
         </div>
 
-        <div class="booking-field">
+        <div class="booking-field booking-field--full">
           <label for="bookingNotes">Notes</label>
           <textarea id="bookingNotes" placeholder="Vehicle model, preferred date, or any request"></textarea>
         </div>
@@ -96,13 +99,12 @@
       </form>
 
       <aside class="price-panel reveal d1" aria-live="polite">
-        <p class="price-label">Estimated Price</p>
+        <p class="price-label">Estimated Total</p>
         <div class="price-value" id="priceValue">Rs. 0</div>
-        <p class="price-detail" id="priceDetail">Select a service to view pricing.</p>
+        <p class="price-detail" id="priceDetail">Add services to view pricing.</p>
         <p class="discount-note">Discount may vary depending upon the desired services.</p>
-        <div class="price-breakdown">
-          <div><span>Service</span><strong id="summaryService">-</strong></div>
-          <div><span>Package</span><strong id="summaryPackage">-</strong></div>
+        <div class="price-breakdown" id="priceBreakdown">
+          <!-- per-service rows injected by JS -->
           <div><span>Vehicle</span><strong id="summaryVehicle">-</strong></div>
         </div>
 
@@ -131,6 +133,6 @@
 <script src="assets/js/main.js?v=4"></script>
 <script src="assets/js/site-config.js"></script>
 <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
-<script src="assets/js/booking.js?v=5"></script>
+<script src="assets/js/booking.js?v=6"></script>
 </body>
 </html>
